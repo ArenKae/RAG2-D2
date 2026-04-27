@@ -1,0 +1,39 @@
+## Editor
+.vscode/*
+.vscode/
+*~
+\#*\#
+
+# System files
+.DS_Store
+desktop.ini
+*.swp
+
+# Object files
+obj/
+*.o
+
+# Executables
+*.a
+*.out
+
+# Virtual environment and database
+myenv/
+!migrations/*.py
+database/data
+__pycache__/
+*.pyc
+*.pyo
+
+# MEMO : delete folder from remote :
+# git rm -r --cached folder_name
+
+# SYNC LOCAL BRANCH FROM REMOTE :
+# git fetch
+# git merge origin/main
+
+# Exctract .tar archive :
+# tar -xf foo.tar
+
+# Create .tar archive :
+# tar -cf archive_name.tar file1 folder_1/
