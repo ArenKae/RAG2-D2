@@ -19,3 +19,20 @@ React frontend
     -> Embedding service
     -> Qdrant vector database
     -> LLM service
+
+Activer l'environnement Python (dev)
+```bash
+cd backend
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+Installer les dépendances dans le venv :
+```bash
+pip install -r requirements.txt
+```
+
+Lancer le serveur backend :
+```bash
+uvicorn app.main:app --reload
+```

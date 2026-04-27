@@ -18,12 +18,12 @@ obj/
 *.out
 
 # Virtual environment and database
-myenv/
-!migrations/*.py
-database/data
+# Python
+.venv/
+venv/
+env/
 __pycache__/
 *.pyc
-*.pyo
 
 # MEMO : delete folder from remote :
 # git rm -r --cached folder_name
