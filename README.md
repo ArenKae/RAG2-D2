@@ -37,3 +37,9 @@ Lancer le serveur backend :
 ```bash
 uvicorn app.main:app --reload
 ```
+
+Installer et initialiser le llm local :
+```bash
+curl -fsSL https://ollama.com/install.sh | sh
+ollama pull llama3.2
+```
