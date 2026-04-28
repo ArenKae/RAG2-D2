@@ -25,15 +25,26 @@ QDRANT_SERVICE = qdrant
 
 ### RULES ###
 
-.PHONY: setup venv install-deps install-ollama pull-llm qdrant ingest run stop clean fclean re status help
+.PHONY: setup check-python venv install-deps install-ollama pull-llm qdrant ingest run stop clean fclean re status help
 
 # Full project setup
 setup: venv install-deps install-ollama pull-llm qdrant ingest
 	@echo "$(GREEN)>>> $(NAME) setup completed successfully.$(DEF_COLOR)"
 	@echo "$(CYAN)>>> You can now run the API with: make run$(DEF_COLOR)"
 
+# Ensure Python is installed
+check-python:
+	@if ! command -v python3 >/dev/null 2>&1; then \
+		echo "Python3 not found. Installing..."; \
+		sudo apt update && sudo apt install -y python3; \
+	fi
+	@if ! python3 -m venv --help >/dev/null 2>&1; then \
+		echo "python3-venv missing. Installing..."; \
+		sudo apt update && sudo apt install -y python3-venv; \
+	fi
+
 # Create Python virtual environment
-venv:
+venv: check-python
 	@echo "$(YELLOW)>>> Checking Python virtual environment...$(DEF_COLOR)"
 	@if [ ! -d "$(VENV)" ]; then \
 		echo "$(CYAN)>>> Creating virtual environment in $(VENV)...$(DEF_COLOR)"; \
