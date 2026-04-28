@@ -20,6 +20,7 @@ React frontend
     -> Qdrant vector database
     -> LLM service
 ```
+Environ 15 Gb requis
 
 Activer l'environnement Python (dev)
 ```bash
