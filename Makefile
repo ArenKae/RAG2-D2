@@ -10,7 +10,7 @@ CYAN = \033[0;96m
 WHITE = \033[0;97m
 
 ### VARIABLES ###
-NAME = rag-demo
+NAME = RAG2-D2
 
 PYTHON = python3
 VENV = backend/.venv
@@ -25,7 +25,7 @@ QDRANT_SERVICE = qdrant
 
 ### RULES ###
 
-.PHONY: setup check-python venv install-deps install-ollama pull-llm qdrant ingest run stop clean fclean re status help
+.PHONY: setup check-python check-docker venv install-deps install-ollama pull-llm qdrant ingest run stop clean fclean re status help
 
 # Full project setup
 setup: check-python venv install-deps install-ollama pull-llm qdrant ingest
@@ -90,8 +90,39 @@ pull-llm:
 	@ollama pull $(OLLAMA_MODEL)
 	@echo "$(GREEN)>>> Model $(OLLAMA_MODEL) is available.$(DEF_COLOR)"
 
+# Ensure Docker and Docker Compose are installed
+check-docker:
+	@echo "$(YELLOW)>>> Checking Docker installation...$(DEF_COLOR)"
+	@if ! command -v docker >/dev/null 2>&1; then \
+		echo "$(CYAN)>>> Docker not found. Installing Docker...$(DEF_COLOR)"; \
+		sudo apt-get update; \
+		sudo apt-get install -y ca-certificates curl; \
+		sudo install -m 0755 -d /etc/apt/keyrings; \
+		sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc; \
+		sudo chmod a+r /etc/apt/keyrings/docker.asc; \
+		echo "deb [arch=$$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $$(. /etc/os-release && echo "$${UBUNTU_CODENAME:-$$VERSION_CODENAME}") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null; \
+		sudo apt-get update; \
+		sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin; \
+		sudo usermod -aG docker $$USER; \
+		echo "$(GREEN)>>> Docker installed.$(DEF_COLOR)"; \
+		echo "$(YELLOW)>>> You may need to log out and log back in for Docker permissions to apply.$(DEF_COLOR)"; \
+	else \
+		echo "$(GREEN)>>> Docker already installed.$(DEF_COLOR)"; \
+	fi
+	@if ! docker compose version >/dev/null 2>&1; then \
+		echo "$(CYAN)>>> Docker Compose plugin missing. Installing...$(DEF_COLOR)"; \
+		sudo apt-get update; \
+		sudo apt-get install -y docker-compose-plugin; \
+	fi
+	@if ! command -v docker-compose >/dev/null 2>&1; then \
+		echo "$(CYAN)>>> Legacy docker-compose command missing. Installing...$(DEF_COLOR)"; \
+		sudo curl -L "https://github.com/docker/compose/releases/download/v2.34.0/docker-compose-$$(uname -s)-$$(uname -m)" -o /usr/local/bin/docker-compose; \
+		sudo chmod +x /usr/local/bin/docker-compose; \
+	fi
+	@echo "$(GREEN)>>> Docker and Docker Compose are ready.$(DEF_COLOR)"
+
 # Start Qdrant vector database
-qdrant:
+qdrant: check-docker
 	@echo "$(YELLOW)>>> Starting Qdrant service...$(DEF_COLOR)"
 	@$(DOCKER_COMPOSE) up -d $(QDRANT_SERVICE)
 	@echo "$(GREEN)>>> Qdrant is running.$(DEF_COLOR)"
@@ -137,10 +168,12 @@ re: fclean setup
 help:
 	@echo "$(CYAN)Available commands for $(NAME):$(DEF_COLOR)"
 	@echo "$(WHITE)  make setup$(DEF_COLOR)          Create venv, install deps, install Ollama, pull model, start Qdrant, ingest data"
+	@echo "$(WHITE)  make check-python$(DEF_COLOR)   Install python packages if missing"
 	@echo "$(WHITE)  make venv$(DEF_COLOR)           Create Python virtual environment"
 	@echo "$(WHITE)  make install-deps$(DEF_COLOR)   Install backend Python dependencies"
 	@echo "$(WHITE)  make install-ollama$(DEF_COLOR) Install Ollama if missing"
 	@echo "$(WHITE)  make pull-llm$(DEF_COLOR)       Pull Ollama model: $(OLLAMA_MODEL)"
+	@echo "$(WHITE)  make check-docker$(DEF_COLOR)   Install docker and docker-compose if missing"
 	@echo "$(WHITE)  make qdrant$(DEF_COLOR)         Start Qdrant container"
 	@echo "$(WHITE)  make ingest$(DEF_COLOR)         Ingest sample data"
 	@echo "$(WHITE)  make run$(DEF_COLOR)            Run FastAPI backend"
