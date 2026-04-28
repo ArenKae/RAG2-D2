@@ -11,24 +11,26 @@ WHITE = \033[0;97m
 
 ### VARIABLES ###
 NAME = RAG2-D2
-
 PYTHON = python3
 VENV = backend/.venv
 PIP = $(VENV)/bin/pip
 UVICORN = $(VENV)/bin/uvicorn
-
 OLLAMA_MODEL = llama3.2
 BACKEND_APP = app.main:app
-
 DOCKER_COMPOSE = docker compose
 QDRANT_SERVICE = qdrant
 
 ### RULES ###
 
-.PHONY: setup check-python check-docker venv install-deps install-ollama pull-llm qdrant ingest run stop clean fclean re status help
+.PHONY: setup resume check-python check-docker venv install-deps install-ollama pull-llm qdrant ingest run stop clean fclean re status help
 
 # Full project setup
-setup: check-python venv install-deps install-ollama pull-llm qdrant ingest
+setup: check-python venv install-deps install-ollama pull-llm qdrant ingest run
+	@echo "$(GREEN)>>> $(NAME) setup completed successfully.$(DEF_COLOR)"
+	@echo "$(CYAN)>>> You can now run the API with: make run$(DEF_COLOR)"
+
+# Resume project setup after reboot to apply docker permissions
+resume: qdrant ingest run
 	@echo "$(GREEN)>>> $(NAME) setup completed successfully.$(DEF_COLOR)"
 	@echo "$(CYAN)>>> You can now run the API with: make run$(DEF_COLOR)"
 
@@ -105,7 +107,7 @@ check-docker:
 		sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin; \
 		sudo usermod -aG docker $$USER; \
 		echo "$(GREEN)>>> Docker installed.$(DEF_COLOR)"; \
-		echo "$(YELLOW)>>> You may need to log out and log back in for Docker permissions to apply.$(DEF_COLOR)"; \
+		echo "$(YELLOW)>>> Reboot your system for Docker permissions to apply, then continue installation with $(CYAN)make resume$(DEF_COLOR)"; \
 	else \
 		echo "$(GREEN)>>> Docker already installed.$(DEF_COLOR)"; \
 	fi
@@ -168,6 +170,7 @@ re: fclean setup
 help:
 	@echo "$(CYAN)Available commands for $(NAME):$(DEF_COLOR)"
 	@echo "$(WHITE)  make setup$(DEF_COLOR)          Create venv, install deps, install Ollama, pull model, start Qdrant, ingest data"
+	@echo "$(WHITE)  make resume$(DEF_COLOR)         Resume project setup after reboot to apply docker permissions"
 	@echo "$(WHITE)  make check-python$(DEF_COLOR)   Install python packages if missing"
 	@echo "$(WHITE)  make venv$(DEF_COLOR)           Create Python virtual environment"
 	@echo "$(WHITE)  make install-deps$(DEF_COLOR)   Install backend Python dependencies"
