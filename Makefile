@@ -28,27 +28,39 @@ QDRANT_SERVICE = qdrant
 .PHONY: setup check-python venv install-deps install-ollama pull-llm qdrant ingest run stop clean fclean re status help
 
 # Full project setup
-setup: venv install-deps install-ollama pull-llm qdrant ingest
+setup: check-python venv install-deps install-ollama pull-llm qdrant ingest
 	@echo "$(GREEN)>>> $(NAME) setup completed successfully.$(DEF_COLOR)"
 	@echo "$(CYAN)>>> You can now run the API with: make run$(DEF_COLOR)"
 
 # Ensure Python is installed
 check-python:
+	@echo "$(YELLOW)>>> Checking Python packages...$(DEF_COLOR)"
 	@if ! command -v python3 >/dev/null 2>&1; then \
-		echo "Python3 not found. Installing..."; \
-		sudo apt update && sudo apt install -y python3; \
+		echo "$(CYAN)>>> Python3 not found. Installing...$(DEF_COLOR)"; \
+		sudo apt update; \
+		sudo apt install -y python3 python3-venv python3-pip; \
+	else \
+		echo "$(GREEN)>>> Python3 already installed.$(DEF_COLOR)"; \
 	fi
-	@if ! python3 -m venv --help >/dev/null 2>&1; then \
-		echo "python3-venv missing. Installing..."; \
-		sudo apt update && sudo apt install -y python3-venv; \
-	fi
+	@tmp_venv=$$(mktemp -d); \
+	if ! python3 -m venv "$$tmp_venv/test-venv" >/dev/null 2>&1; then \
+		echo "$(CYAN)>>> Python venv support incomplete. Installing python3-venv...$(DEF_COLOR)"; \
+		sudo apt update; \
+		sudo apt install -y python3-venv python3-pip; \
+	fi; \
+	rm -rf "$$tmp_venv"
 
 # Create Python virtual environment
 venv: check-python
 	@echo "$(YELLOW)>>> Checking Python virtual environment...$(DEF_COLOR)"
 	@if [ ! -d "$(VENV)" ]; then \
 		echo "$(CYAN)>>> Creating virtual environment in $(VENV)...$(DEF_COLOR)"; \
-		$(PYTHON) -m venv $(VENV); \
+		rm -rf "$(VENV)"; \
+		$(PYTHON) -m venv "$(VENV)" || { \
+			echo "$(RED)>>> Failed to create virtual environment.$(DEF_COLOR)"; \
+			rm -rf "$(VENV)"; \
+			exit 1; \
+		}; \
 		echo "$(GREEN)>>> Virtual environment created.$(DEF_COLOR)"; \
 	else \
 		echo "$(GREEN)>>> Virtual environment already exists.$(DEF_COLOR)"; \
