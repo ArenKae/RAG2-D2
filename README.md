@@ -19,6 +19,7 @@ React frontend
     -> Embedding service
     -> Qdrant vector database
     -> LLM service
+```
 
 Activer l'environnement Python (dev)
 ```bash
