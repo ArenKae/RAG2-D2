@@ -1,5 +1,6 @@
 import time
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.services.embedding_service import EmbeddingService
 from app.services.qdrant_service import QdrantService
@@ -7,6 +8,14 @@ from app.services.llm_service import LLMService
 from app.rag.prompt_builder import build_rag_prompt
 
 app = FastAPI(title="RAG2-D2")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 embedding_service = EmbeddingService()
 qdrant_service = QdrantService()
