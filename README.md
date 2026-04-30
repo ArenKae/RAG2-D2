@@ -42,5 +42,12 @@ uvicorn app.main:app --reload
 Installer et initialiser le llm local :
 ```bash
 curl -fsSL https://ollama.com/install.sh | sh
-ollama pull llama3.2
+ollama pull llama3.2 && ollama pull llama3.2:1b
+```
+
+Frontend : Vite + React + JavaScript
+```bash
+npm create vite@latest frontend
+cd frontend
+nmp run dev
 ```

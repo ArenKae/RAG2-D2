@@ -1,3 +1,4 @@
+import time
 from fastapi import FastAPI
 
 from app.services.embedding_service import EmbeddingService
@@ -56,11 +57,19 @@ def search(q: str, limit: int = 5):
 
 @app.get("/ask")
 def ask(q: str, limit: int = 5):
+    t0 = time.perf_counter()
+
     query_vector = embedding_service.embed_text(q)
+    t1 = time.perf_counter()
+
     matches = qdrant_service.search(query_vector=query_vector, limit=limit)
+    t2 = time.perf_counter()
 
     prompt = build_rag_prompt(question=q, matches=matches)
+    t3 = time.perf_counter()
+
     answer = llm_service.generate(prompt)
+    t4 = time.perf_counter()
 
     sources = []
 
@@ -82,5 +91,13 @@ def ask(q: str, limit: int = 5):
     return {
         "question": q,
         "answer": answer,
+        "model": llm_service.model,
+        "timings": {
+            "embedding": round(t1 - t0, 3),
+            "qdrant_search": round(t2 - t1, 3),
+            "prompt_building": round(t3 - t2, 3),
+            "llm_generation": round(t4 - t3, 3),
+            "total": round(t4 - t0, 3),
+        },
         "sources": sources,
     }
