@@ -64,8 +64,11 @@ def search(q: str, limit: int = 5):
         "matches": results,
     }
 
+
 @app.get("/ask")
 def ask(q: str, limit: int = 5):
+    
+
     t0 = time.perf_counter()
 
     query_vector = embedding_service.embed_text(q)
@@ -73,6 +76,17 @@ def ask(q: str, limit: int = 5):
 
     matches = qdrant_service.search(query_vector=query_vector, limit=limit)
     t2 = time.perf_counter()
+    MIN_SCORE = 0.3
+    matches = [
+        match for match in matches
+        if match.score >= MIN_SCORE
+    ]
+    if not matches:
+        return {
+            "question": q,
+            "answer": "Sorry, I don't know anything about that. Could you elaborate?",
+            "sources": []
+        }
 
     prompt = build_rag_prompt(question=q, matches=matches)
     t3 = time.perf_counter()

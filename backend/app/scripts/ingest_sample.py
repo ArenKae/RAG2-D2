@@ -13,12 +13,12 @@ from app.ingestion.normalize_entries import (
     build_payload,
 )
 
-RAW_DIR = Path(__file__).resolve().parents[2] / "data" / "raw"
+RAW_DIR = Path(__file__).resolve().parents[2] / "data"
 
 def load_entries() -> list[dict]:
     entries = []
 
-    for path in RAW_DIR.glob("*.json"):
+    for path in sorted(RAW_DIR.glob("*.json")):
         with path.open("r", encoding="utf-8") as file:
             data = json.load(file)
 
@@ -37,29 +37,28 @@ def make_point_id(entry_id: str, chunk_index: int) -> str:
 
 
 def main():
-    max_entries = 100
-
     entries = load_entries()
     usable_entries = []
     for entry in entries:
         if is_usable_entry(entry):
             usable_entries.append(entry)
-    sample = usable_entries[:max_entries]
 
     print(f"Loaded entries: {len(entries)}")
     print(f"Usable entries: {len(usable_entries)}")
-    print(f"Indexing sample: {len(sample)}")
+    print(f"Indexing entries: {len(usable_entries)}")
 
     # Instanciate classes
-    embedding_service = EmbeddingService()
     qdrant_service = QdrantService()
+    embedding_service = EmbeddingService()
 
     print("Recreating Qdrant collection...")
     qdrant_service.recreate_collection()
 
     points = []
-
-    for entry in sample:
+    total_points = 0
+    BATCH_SIZE = 128
+    
+    for entry_index, entry in enumerate(usable_entries, start=1):
         indexable_text = build_indexable_text(entry)
         chunks = chunk_text(indexable_text)
 
@@ -75,11 +74,18 @@ def main():
 
             points.append(point)
 
-    print(f"Generated points: {len(points)}")
+			# Upsert points by batch (qdrant refuses requests bigger than the ~33mb limit)
+            if len(points) >= BATCH_SIZE:
+                qdrant_service.upsert_points(points)
+                total_points += len(points)
+                print(f"Upserted {total_points} points...")
+                points = []
 
-    qdrant_service.upsert_points(points)
+    if points:
+        qdrant_service.upsert_points(points)
+        total_points += len(points)
 
-    print("Ingestion complete.")
+    print(f"Ingestion complete. Total points: {total_points}")
 
 
 if __name__ == "__main__":
