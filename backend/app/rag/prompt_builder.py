@@ -36,7 +36,6 @@ Rules:
 
 Style:
 - Stay lightly in-universe, but prioritize clarity and accuracy.
-- You may occasionally add very short droid-like sounds (e.g., "beep", "bwoop"), but keep them minimal and non-disruptive.
 
 Context:
 {context}
