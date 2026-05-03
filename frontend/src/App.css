@@ -227,9 +227,6 @@ textarea {
   object-fit: contain;
 }
 
-
-
-
 .droid-avatar.is-thinking {
   animation: droid-thinking 0.42s infinite alternate ease-in-out;
 }
@@ -295,18 +292,40 @@ textarea {
 }
 
 .ask-form button {
-  width: 70px;
+  width: 56px;
+  height: 56px;
+  flex: 0 0 56px;
   border: 0;
   border-radius: 18px;
   color: white;
-  background: linear-gradient(145deg, #3b82f6, #1d4ed8);
   cursor: pointer;
+}
+
+.submit-button {
+  background: linear-gradient(145deg, #3b82f6, #1d4ed8);
+}
+
+.reset-button {
+  background: rgba(30, 41, 59, 0.92);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  color: #cbd5e1;
+  font-size: 1.35rem;
 }
 
 .ask-form button:disabled {
   opacity: 0.45;
   cursor: not-allowed;
 }
+
+.reset-button:hover:not(:disabled) {
+  background: rgba(51, 65, 85, 0.95);
+}
+
+.submit-button:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+
 
 .error-message {
   margin: 16px 0 0;

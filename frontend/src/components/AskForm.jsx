@@ -1,4 +1,10 @@
-export default function AskForm({ question, setQuestion, onSubmit, loading }) {
+export default function AskForm({
+  question,
+  setQuestion,
+  onSubmit,
+  loading,
+  onReset,
+}) {
   return (
     <form className="ask-form" onSubmit={onSubmit}>
       <textarea
@@ -8,7 +14,24 @@ export default function AskForm({ question, setQuestion, onSubmit, loading }) {
         rows={2}
       />
 
-      <button type="submit" disabled={loading || !question.trim()}>
+      <button
+        className="reset-button"
+        type="button"
+        onClick={onReset}
+        disabled={loading}
+        aria-label="Reset conversation"
+        title="Reset"
+      >
+        ↻
+      </button>
+
+      <button
+        className="submit-button"
+        type="submit"
+        disabled={loading || !question.trim()}
+        aria-label="Send question"
+        title="Ask"
+      >
         ➤
       </button>
     </form>

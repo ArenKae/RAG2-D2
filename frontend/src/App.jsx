@@ -1,4 +1,4 @@
-import {  useMemo, useState } from "react";
+import { useState } from "react";
 
 import AskForm from "./components/AskForm";
 import AnswerPanel from "./components/AnswerPanel";
@@ -12,6 +12,11 @@ import "./App.css";
 
 const API_BASE_URL = "http://localhost:8000";
 
+function getRandomIdleLine() {
+  const randomIndex = Math.floor(Math.random() * droidIdleLines.length);
+  return droidIdleLines[randomIndex];
+}
+
 export default function App() {
   const [question, setQuestion] = useState("");
   const [lastQuestion, setLastQuestion] = useState("");
@@ -19,11 +24,17 @@ export default function App() {
   const [sources, setSources] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [idleLine, setIdleLine] = useState(getRandomIdleLine);
 
-  const idleLine = useMemo(() => {
-    const randomIndex = Math.floor(Math.random() * droidIdleLines.length);
-    return droidIdleLines[randomIndex];
-  }, []);
+function handleReset() {
+  setQuestion("");
+  setLastQuestion("");
+  setAnswer("");
+  setSources([]);
+  setError("");
+  setLoading(false);
+  setIdleLine(getRandomIdleLine());
+}
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -72,7 +83,7 @@ export default function App() {
             <p>Star Wars lore assistant</p>
           </div>
 
-          <span className="rag-badge">Powered by RAG</span>
+          <span className="rag-badge">Powered by llama3.2</span>
         </header>
 
         <section className="dialog-window">
@@ -115,6 +126,7 @@ export default function App() {
           setQuestion={setQuestion}
           onSubmit={handleSubmit}
           loading={loading}
+          onReset={handleReset}
         />
       </section>
 
