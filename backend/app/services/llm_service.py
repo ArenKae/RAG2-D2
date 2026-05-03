@@ -18,7 +18,7 @@ class LLMService:
                     "num_ctx": 4096
                 }
             },
-            timeout=120,
+            timeout=500,
         )
 
         response.raise_for_status()
