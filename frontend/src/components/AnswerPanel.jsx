@@ -4,9 +4,10 @@ export default function AnswerPanel({ answer }) {
   }
 
   return (
-    <section>
-      <h2>Answer</h2>
-      <p>{answer}</p>
-    </section>
+    <div className="message-row assistant-row">
+      <div className="message-bubble assistant-bubble">
+        <p>{answer}</p>
+      </div>
+    </div>
   );
 }
