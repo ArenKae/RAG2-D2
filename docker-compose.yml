@@ -8,5 +8,17 @@ services:
     volumes:
       - qdrant_storage:/qdrant/storage
 
+  frontend:
+    build:
+      context: ./frontend
+    container_name: rag-frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+
 volumes:
   qdrant_storage:
