@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
-export default function TypewriterText({ text, speed = 50 }) {
+export default function TypewriterText({ text, speed = 50 })
+{
   const [displayedText, setDisplayedText] = useState("");
 
   useEffect(() => {
@@ -12,9 +13,8 @@ export default function TypewriterText({ text, speed = 50 }) {
       index += 1;
       setDisplayedText(text.slice(0, index));
 
-      if (index >= text.length) {
+      if (index >= text.length)
         clearInterval(intervalId);
-      }
     }, speed);
 
     return () => clearInterval(intervalId);

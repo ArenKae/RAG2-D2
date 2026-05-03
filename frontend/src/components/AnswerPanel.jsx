@@ -1,7 +1,7 @@
-export default function AnswerPanel({ answer }) {
-  if (!answer) {
+export default function AnswerPanel({ answer })
+{
+  if (!answer)
     return null;
-  }
 
   return (
     <div className="message-row assistant-row">

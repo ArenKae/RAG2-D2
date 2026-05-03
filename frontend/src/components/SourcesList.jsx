@@ -1,13 +1,15 @@
-function getScoreClass(score) {
-  if (score >= 0.8) return "score-high";
-  if (score >= 0.6) return "score-medium";
+function getScoreClass(score)
+{
+  if (score >= 0.8)
+    return "score-high";
+  if (score >= 0.6)
+    return "score-medium";
   return "score-low";
 }
 
 export default function SourcesList({ sources }) {
-  if (!sources || sources.length === 0) {
+  if (!sources || sources.length === 0)
     return null;
-  }
 
   return (
     <section className="sources-panel">

@@ -325,11 +325,107 @@ textarea {
   filter: brightness(1.08);
 }
 
-
-
 .error-message {
   margin: 16px 0 0;
   color: #fca5a5;
+}
+
+.timings-panel {
+  margin-top: 20px;
+  padding: 24px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 24px;
+  background: rgba(8, 13, 26, 0.86);
+  box-shadow: 0 18px 56px rgba(0, 0, 0, 0.35);
+}
+
+.timings-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.timings-header h2 {
+  margin: 0;
+  color: #e5edf9;
+  font-size: 1.1rem;
+}
+
+.timings-header p {
+  margin: 4px 0 0;
+  color: #94a3b8;
+  font-size: 0.92rem;
+}
+
+.timeout-pill {
+  flex: 0 0 auto;
+  padding: 8px 12px;
+  border: 1px solid rgba(147, 197, 253, 0.26);
+  border-radius: 999px;
+  color: #bfdbfe;
+  background: rgba(37, 99, 235, 0.14);
+  font-size: 0.88rem;
+}
+
+.timings-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(120px, 1fr));
+  gap: 12px;
+}
+
+.timing-card {
+  padding: 14px 16px;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  border-radius: 16px;
+  background: rgba(15, 23, 42, 0.72);
+}
+
+.timing-card span {
+  display: block;
+  margin-bottom: 8px;
+  color: #94a3b8;
+  font-size: 0.82rem;
+}
+
+.timing-card strong {
+  color: #dbeafe;
+  font-size: 1.15rem;
+}
+
+.timing-card-slowest {
+  border-color: rgba(248, 113, 113, 0.52);
+  background: rgba(127, 29, 29, 0.28);
+}
+
+.timing-card-slowest strong {
+  color: #fca5a5;
+}
+
+.timing-card-total {
+  border-color: rgba(16, 185, 129, 0.5);
+  background: rgba(16, 185, 129, 0.15);
+}
+
+.timing-card-total strong {
+  color: #34d399;
+}
+
+@media (max-width: 900px) {
+  .timings-grid {
+    grid-template-columns: repeat(2, minmax(120px, 1fr));
+  }
+
+  .timings-header {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 520px) {
+  .timings-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .sources-panel {

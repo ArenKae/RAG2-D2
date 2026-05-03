@@ -1,23 +1,23 @@
 import { useState } from "react";
-
+import { droidIdleLines } from "./data/droidLines";
 import AskForm from "./components/AskForm";
 import AnswerPanel from "./components/AnswerPanel";
 import SourcesList from "./components/SourcesList";
 import DroidAvatar from "./components/DroidAvatar";
+import TimingsPanel from "./components/TimingsPanel";
 import TypewriterText from "./components/TypewriterText";
-import { droidIdleLines } from "./data/droidLines";
-
-
 import "./App.css";
 
 const API_BASE_URL = "http://localhost:8000";
 
-function getRandomIdleLine() {
+function getRandomIdleLine()
+{
   const randomIndex = Math.floor(Math.random() * droidIdleLines.length);
   return droidIdleLines[randomIndex];
 }
 
-export default function App() {
+export default function App()
+{
   const [question, setQuestion] = useState("");
   const [lastQuestion, setLastQuestion] = useState("");
   const [answer, setAnswer] = useState("");
@@ -25,25 +25,29 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [idleLine, setIdleLine] = useState(getRandomIdleLine);
+  const [timings, setTimings] = useState(null);
 
-function handleReset() {
-  setQuestion("");
-  setLastQuestion("");
-  setAnswer("");
-  setSources([]);
-  setError("");
-  setLoading(false);
-  setIdleLine(getRandomIdleLine());
-}
+  function handleReset()
+  {
+    setQuestion("");
+    setLastQuestion("");
+    setAnswer("");
+    setSources([]);
+    setError("");
+    setTimings(null);
+    setLoading(false);
+    setIdleLine(getRandomIdleLine());
+  }
 
-  async function handleSubmit(event) {
+  async function handleSubmit(event)
+  {
+    setTimings(null);
     event.preventDefault();
 
     const trimmedQuestion = question.trim();
 
-    if (!trimmedQuestion) {
+    if (!trimmedQuestion)
       return;
-    }
 
     setLastQuestion(trimmedQuestion);
     setLoading(true);
@@ -51,24 +55,23 @@ function handleReset() {
     setAnswer("");
     setSources([]);
 
-    try {
-      const params = new URLSearchParams({
-        q: trimmedQuestion,
-        limit: "5",
-      });
-
+    try
+    {
+      const params = new URLSearchParams({q: trimmedQuestion, limit: "5",});
       const response = await fetch(`${API_BASE_URL}/ask?${params.toString()}`);
 
-      if (!response.ok) {
+      if (!response.ok)
         throw new Error(`Request failed with status ${response.status}`);
-      }
 
       const data = await response.json();
 
       setAnswer(data.answer);
       setSources(data.sources || []);
-    } catch (err) {
+      setTimings(data.timings || null);
+
+    }catch (err) {
       setError(err.message);
+
     } finally {
       setLoading(false);
     }
@@ -93,30 +96,30 @@ function handleReset() {
             </div>
           )}
 
-         <div className="assistant-zone">
-          <div className="assistant-character">
-          {!answer && (
-            <div className="thinking-bubble">
-              {loading ? (
-                <>
-                  <span>RAG2-D2 is thinking</span>
-                  <div className="typing-dots">
-                    <span />
-                    <span />
-                    <span />
-                  </div>
-                </>
-              ) : (
-                <TypewriterText text={idleLine} speed={50} />
-              )}
+          <div className="assistant-zone">
+            <div className="assistant-character">
+            {!answer && (
+              <div className="thinking-bubble">
+                {loading ? (
+                  <>
+                    <span>RAG2-D2 is thinking</span>
+                    <div className="typing-dots">
+                      <span />
+                      <span />
+                      <span />
+                    </div>
+                  </>
+                ) : (
+                  <TypewriterText text={idleLine} speed={50} />
+                )}
+              </div>
+            )}
+  
+              <DroidAvatar loading={loading} speaking={Boolean(answer)} />
             </div>
-          )}
-
-            <DroidAvatar loading={loading} speaking={Boolean(answer)} />
+  
+              <AnswerPanel answer={answer} />
           </div>
-
-            <AnswerPanel answer={answer} />
-         </div>
         </section>
 
         {error && <p className="error-message">{error}</p>}
@@ -130,6 +133,7 @@ function handleReset() {
         />
       </section>
 
+      <TimingsPanel timings={timings} timeout={500} />
       <SourcesList sources={sources} />
     </main>
   );

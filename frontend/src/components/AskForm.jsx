@@ -1,10 +1,5 @@
-export default function AskForm({
-  question,
-  setQuestion,
-  onSubmit,
-  loading,
-  onReset,
-}) {
+export default function AskForm({question, setQuestion, onSubmit, loading, onReset})
+{
   return (
     <form className="ask-form" onSubmit={onSubmit}>
       <textarea
