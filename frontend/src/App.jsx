@@ -1,9 +1,12 @@
-import { useState } from "react";
+import {  useMemo, useState } from "react";
 
 import AskForm from "./components/AskForm";
 import AnswerPanel from "./components/AnswerPanel";
 import SourcesList from "./components/SourcesList";
 import DroidAvatar from "./components/DroidAvatar";
+import TypewriterText from "./components/TypewriterText";
+import { droidIdleLines } from "./data/droidLines";
+
 
 import "./App.css";
 
@@ -16,6 +19,11 @@ export default function App() {
   const [sources, setSources] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const idleLine = useMemo(() => {
+    const randomIndex = Math.floor(Math.random() * droidIdleLines.length);
+    return droidIdleLines[randomIndex];
+  }, []);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -71,26 +79,33 @@ export default function App() {
           {lastQuestion && (
             <div className="message-row user-row">
               <div className="message-bubble user-bubble">{lastQuestion}</div>
-              <div className="user-avatar">👤</div>
             </div>
           )}
 
-          {loading && (
+         <div className="assistant-zone">
+          <div className="assistant-character">
+          {!answer && (
             <div className="thinking-bubble">
-              <span>RAG2-D2 is thinking</span>
-              <div className="typing-dots">
-                <span />
-                <span />
-                <span />
-              </div>
+              {loading ? (
+                <>
+                  <span>RAG2-D2 is thinking</span>
+                  <div className="typing-dots">
+                    <span />
+                    <span />
+                    <span />
+                  </div>
+                </>
+              ) : (
+                <TypewriterText text={idleLine} speed={50} />
+              )}
             </div>
           )}
 
-          <div className="assistant-zone">
             <DroidAvatar loading={loading} speaking={Boolean(answer)} />
+          </div>
 
             <AnswerPanel answer={answer} />
-          </div>
+         </div>
         </section>
 
         {error && <p className="error-message">{error}</p>}
