@@ -8,17 +8,50 @@ services:
     volumes:
       - qdrant_storage:/qdrant/storage
 
+  ollama:
+    build:
+      context: ./ollama
+    container_name: ollama
+    volumes:
+      - ollama_models:/root/.ollama
+    environment:
+      - OLLAMA_MODEL=llama3.2:1b
+
+  backend:
+    build:
+      context: ./backend
+    container_name: backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/app:/app/app
+      - ./backend/data:/app/data
+    environment:
+      - QDRANT_URL=http://qdrant:6333
+      - COLLECTION_NAME=star_wars_entries
+      - OLLAMA_URL=http://ollama:11434
+      - OLLAMA_MODEL=llama3.2:1b
+    depends_on:
+      - qdrant
+      - ollama
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
   frontend:
     build:
       context: ./frontend
-    container_name: rag-frontend
+    container_name: frontend
     ports:
       - "5173:5173"
     volumes:
       - ./frontend:/app
       - /app/node_modules
+    depends_on:
+      - backend
     environment:
       - CHOKIDAR_USEPOLLING=true
 
 volumes:
   qdrant_storage:
+  ollama_models:

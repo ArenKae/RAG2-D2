@@ -1,10 +1,10 @@
 import requests
-
+import os
 
 class LLMService:
     def __init__(self, model: str = "llama3.2"):
-        self.model = model
-        self.base_url = "http://localhost:11434"
+        self.model = os.getenv("OLLAMA_MODEL", "llama3.2:1b")
+        self.base_url = os.getenv("OLLAMA_URL", "http://localhost:11434")
 
     def generate(self, prompt: str) -> str:
         response = requests.post(
